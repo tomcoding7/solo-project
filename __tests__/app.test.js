@@ -7,7 +7,7 @@ describe('GET /api/topics', () => {
 
         expect(response.statusCode).toBe(200);
         expect(Array.isArray(response.body)).toBe(true);
-
+        console.log(response, "response test")
         response.body.forEach(topic => {
             expect(topic).toHaveProperty('slug');
             expect(topic).toHaveProperty('description');
