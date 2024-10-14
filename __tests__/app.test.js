@@ -1,0 +1,26 @@
+const request = require('supertest');
+const app = require('../db/app');
+
+describe('GET /api/topics', () => {
+    test('should respond with an array of topic objects', async () => {
+        const response = await request(app).get('/api/topics');
+
+        expect(response.statusCode).toBe(200);
+        expect(Array.isArray(response.body)).toBe(true);
+
+        response.body.forEach(topic => {
+            expect(topic).toHaveProperty('slug');
+            expect(topic).toHaveProperty('description');
+        });
+    });
+
+    test('should handle errors gracefully', async () => {
+
+
+        const response = await request(app).get('/api/topics');
+
+
+        expect(response.statusCode).not.toBe(500);
+
+    });
+});
