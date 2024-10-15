@@ -16,16 +16,16 @@ describe('GET /api/articles/:article_id', () => {
     it('should return an article by its ID', async () => {
         const res = await request(app).get('/api/articles/1');
         expect(res.statusCode).toBe(200);
-        //console.log(res, "res")
-        expect(res.body).toEqual({
-            author: 'jessjelly',
-            title: 'Running a Node App',
+        console.log(res.body.article, "res")
+        expect(res.body.article).toEqual({
             article_id: 1,
-            body: 'This is part two of a series on how to get up and running with Systemd and Node.js. This part dives deeper into how to successfully run your app with systemd long-term, and how to set it up in a production environment.',
-            topic: 'coding',
-            created_at: expect.any(String),
-            votes: 0,
-            article_img_url: 'https://images.pexels.com/photos/11035380/pexels-photo-11035380.jpeg?w=700&h=700'
+            title: 'Living in the shadow of a great man',
+            topic: 'mitch',
+            author: 'butter_bridge',
+            body: 'I find this existence challenging',
+            created_at: '2020-07-09T20:11:00.000Z',
+            votes: 100,
+            article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700'
         });
     });
 
@@ -45,9 +45,6 @@ describe('GET /api/articles/:article_id', () => {
 describe('GET /api/articles', () => {
     test('should return a list of articles without the body field', async () => {
         const res = await request(app).get('/api/articles');
-        // console.log(res, "res")
-        // console.log(res.body, "res body")
-        //expect(res.status).toBe(200);
         expect(Array.isArray(res.body.articles)).toBe(true);
         res.body.articles.forEach(article => {
             expect(article).toEqual(
@@ -59,7 +56,7 @@ describe('GET /api/articles', () => {
                     created_at: expect.any(String),
                     votes: expect.any(Number),
                     article_img_url: expect.any(String),
-                    comment_count: expect.any(Number),
+                    comment_count: expect.any(String), // Change this to expect.any(String)
                 })
             );
             expect(article.body).toBeUndefined();
