@@ -1,12 +1,12 @@
 const express = require('express');
-const topicsRouter = require('../routes/topics');
+const router = require('../routes/topics');
 const { Pool } = require('pg');
 require('dotenv').config();
 const PORT = process.env.PORT || 3000;
 
 const app = express();
 app.use(express.json());
-app.use(topicsRouter);
+app.use(router);
 
 app.use((err, req, res, next) => {
     console.error('Error:', err.message); // Log the error

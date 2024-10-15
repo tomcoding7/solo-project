@@ -1,13 +1,16 @@
 const express = require('express');
 const fs = require('fs')
 const path = require('path');
-const { getArticleById } = require('../controllers/articlescontroller')
+const { getArticleById, getArticles } = require('../controllers/articlescontroller')
 
 const { getTopics } = require('../controllers/topicscontroller')
 
 const endpoints = require('../endpoints.json')
 
 const router = express.Router();
+
+router.get('/api/articles', getArticles);
+
 router.get('/api/articles/:article_id', getArticleById);
 
 router.get('/api', (req, res) => {

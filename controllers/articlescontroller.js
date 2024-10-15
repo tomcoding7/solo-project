@@ -1,5 +1,25 @@
 // In articlesController.js
 const articlesModel = require('../models/articlesmodel'); // Adjust the path as necessary
+const db = require('../db/connection')
+
+
+const getArticles = async (req, res, next) => {
+    try {
+        const result = await db.query(`SELECT articles.article_id, articles.title, articles.author, articles.topic, articles.created_at, articles.votes, articles.article_img_url, 
+      COUNT(comments.comment_id) AS comment_count
+      FROM articles
+      LEFT JOIN comments ON articles.article_id = comments.article_id
+      GROUP BY articles.article_id
+      ORDER BY articles.created_at DESC;
+    `);
+
+        const articles = result.rows;
+
+        res.status(200).send({ articles })
+    } catch (err) {
+        next(err)
+    }
+}
 
 const getArticleById = async (req, res, next) => {
     const { article_id } = req.params;
@@ -23,4 +43,4 @@ const getArticleById = async (req, res, next) => {
     }
 };
 
-module.exports = { getArticleById };
+module.exports = { getArticleById, getArticles };
