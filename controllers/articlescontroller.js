@@ -2,6 +2,30 @@
 const articlesModel = require('../models/articlesmodel'); // Adjust the path as necessary
 const db = require('../db/connection')
 
+const postComments = async (req, res, next) => {
+    const { article_id } = req.params;
+    const { username, body } = req.body;
+
+    if (isNaN(article_id)) {
+        return res.status(400).send({ msg: 'Invalid article ID' })
+    }
+    if (!username || typeof username !== 'string' || !body || typeof body !== 'string') {
+        return res.status(400).send({ msg: 'invalid input provide both username and body' })
+    }
+    try {
+        const result = await db.query(`
+            INSERT INTO comments (author, body, article_id)
+            VALUES ($1, $2, $3)
+            RETURNING comment_id, votes, created_at, author, body, article_id;`,
+            [username, body, article_id]
+        );
+        const newComment = result.rows[0]
+        res.status(201).send({ comment: newComment })
+    } catch (err) {
+        next(err)
+    }
+}
+
 
 const getArticles = async (req, res, next) => {
     try {
@@ -43,4 +67,4 @@ const getArticleById = async (req, res, next) => {
     }
 };
 
-module.exports = { getArticleById, getArticles };
+module.exports = { getArticleById, getArticles, postComments };

@@ -41,6 +41,48 @@
         "article_img_url": "url_to_image.jpg"
       }
     }
-  }
+  },
+  "POST /api/articles/:article_id/comments": {
+        "description": "Add a comment for a specific article.",
+        "parameters": {
+            "article_id": "The ID of the article to which the comment is being added."
+        },
+        "requestBody": {
+            "type": "object",
+            "properties": {
+                "username": {
+                    "type": "string",
+                    "description": "The username of the person adding the comment."
+                },
+                "body": {
+                    "type": "string",
+                    "description": "The content of the comment."
+                }
+            },
+            "required": ["username", "body"]
+        },
+        "responses": {
+            "201": {
+                "description": "The posted comment.",
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "comment_id": { "type": "integer" },
+                        "votes": { "type": "integer" },
+                        "created_at": { "type": "string", "format": "date-time" },
+                        "author": { "type": "string" },
+                        "body": { "type": "string" },
+                        "article_id": { "type": "integer" }
+                    }
+                }
+            },
+            "400": {
+                "description": "Invalid input, please provide both username and body."
+            },
+            "404": {
+                "description": "Article not found."
+            }
+        }
+    }
 }
 

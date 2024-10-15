@@ -16,7 +16,7 @@ describe('GET /api/articles/:article_id', () => {
     it('should return an article by its ID', async () => {
         const res = await request(app).get('/api/articles/1');
         expect(res.statusCode).toBe(200);
-        console.log(res.body.article, "res")
+        // console.log(res.body.article, "res")
         expect(res.body.article).toEqual({
             article_id: 1,
             title: 'Living in the shadow of a great man',

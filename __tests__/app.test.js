@@ -29,7 +29,7 @@ describe('GET /api', () => {
     it('should return API documentation', async () => {
         const response = await request(app).get('/api');
 
-        console.log(response, "response")
+        // console.log(response, "response")
         expect(response.statusCode).toBe(200);
     });
 });
