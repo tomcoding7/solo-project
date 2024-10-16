@@ -160,7 +160,7 @@ describe('GET /api/articles/:article_id/comments', () => {
             .get('/api/articles/not-a-number/comments')
             .expect(400);
 
-        expect(res.body).toEqual({ msg: 'Invalid article ID' });
+        expect(res.body).toEqual({ msg: 'Invalid article ID format' });
     });
 
     it('should return a 404 error if the article_id does not exist', async () => {
@@ -178,5 +178,42 @@ describe('GET /api/articles/:article_id/comments', () => {
 
         expect(Array.isArray(res.body.comments)).toBe(true);
         expect(res.body.comments.length).toBe(0);
+    });
+});
+
+describe('PATCH /api/articles/:article_id', () => {
+    it('should update the article votes', async () => {
+        const res = await request(app)
+            .patch('/api/articles/1')
+            .send({ inc_votes: 1 });
+
+        expect(res.statusCode).toBe(200);
+        expect(res.body.article.votes).toBe(/* expected updated votes */);
+    });
+
+    it('should return 404 for an invalid article_id', async () => {
+        const res = await request(app)
+            .patch('/api/articles/999') // Assuming this ID does not exist
+            .send({ inc_votes: 1 });
+
+        expect(res.statusCode).toBe(404);
+        expect(res.body.msg).toBe('Article not found');
+    });
+
+    it('should return 400 if inc_votes is not a number', async () => {
+        const res = await request(app)
+            .patch('/api/articles/1')
+            .send({ inc_votes: 'not_a_number' });
+
+        expect(res.statusCode).toBe(400);
+        expect(res.body.msg).toBe('inc_votes must be a number');
+    });
+
+    it('should return 400 if inc_votes is missing', async () => {
+        const res = await request(app)
+            .patch('/api/articles/1')
+            .send({}); // No inc_votes
+
+        expect(res.statusCode).toBe(400);
     });
 });

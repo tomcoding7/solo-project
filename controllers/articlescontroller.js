@@ -2,6 +2,29 @@
 const articlesModel = require('../models/articlesmodel'); // Adjust the path as necessary
 const db = require('../db/connection')
 
+const updateArticle = async (req, res, next) => {
+    const { article_id } = req.params;
+    const { inc_votes } = req.body;
+
+    if (typeof inc_votes !== 'number') {
+        return res.status(400).send({ msg: 'inc_votes must be number' })
+    }
+    try {
+        const result = await db.query(
+            `UPDATE article SET votes = votes + $1 WHERE article_id = $2 RETURNING *`,
+            [inc_votes, article_id]
+        )
+
+        if (result.rows.length === 0) {
+            return res.status(400).send({ msg: 'Article not found' })
+        }
+        res.status(200).send({ article: result.rows[0] })
+    } catch (err) {
+        next(err)
+    }
+
+}
+
 const getCommentsByArticleId = async (req, res, next) => {
     const { article_id } = req.params;
 
@@ -95,4 +118,4 @@ const getArticleById = async (req, res, next) => {
     }
 };
 
-module.exports = { getArticleById, getArticles, postComments, getCommentsByArticleId };
+module.exports = { getArticleById, getArticles, postComments, getCommentsByArticleId, updateArticle };

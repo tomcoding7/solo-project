@@ -114,6 +114,9 @@
                 "description": "No comments found for this article."
             }
         }
+    },
+    "PATCH /api/articles/:article_id": {
+        "description": "Updates an article's votes. Request body accepts { inc_votes: newVote }. Responds with the updated article."
     }
 }
 
