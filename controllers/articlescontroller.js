@@ -11,12 +11,12 @@ const updateArticle = async (req, res, next) => {
     }
     try {
         const result = await db.query(
-            `UPDATE article SET votes = votes + $1 WHERE article_id = $2 RETURNING *`,
+            `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`,
             [inc_votes, article_id]
         )
 
         if (result.rows.length === 0) {
-            return res.status(400).send({ msg: 'Article not found' })
+            return res.status(404).send({ msg: 'Article not found' })
         }
         res.status(200).send({ article: result.rows[0] })
     } catch (err) {
