@@ -117,6 +117,9 @@
     },
     "PATCH /api/articles/:article_id": {
         "description": "Updates an article's votes. Request body accepts { inc_votes: newVote }. Responds with the updated article."
-    }
+    },
+    "DELETE /api/comments/:comment_id": {
+    "description": "Deletes a comment by comment_id. Responds with status 204 and no content."
+  }
 }
 

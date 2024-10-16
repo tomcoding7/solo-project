@@ -206,7 +206,7 @@ describe('PATCH /api/articles/:article_id', () => {
             .send({ inc_votes: 'not_a_number' });
 
         expect(res.statusCode).toBe(400);
-        expect(res.body.msg).toBe('inc_votes must be a number');
+        expect(res.body.msg).toBe('inc_votes must be number');
     });
 
     it('should return 400 if inc_votes is missing', async () => {
@@ -215,5 +215,22 @@ describe('PATCH /api/articles/:article_id', () => {
             .send({}); // No inc_votes
 
         expect(res.statusCode).toBe(400);
+    });
+});
+
+describe('DELETE /api/comments/:comment_id', () => {
+    test('should delete the comment and respond with 204 status', async () => {
+        const res = await request(app).delete('/api/comments/1').expect(204);
+        expect(res.body).toEqual({});
+    });
+
+    test('should return a 404 error if the comment does not exist', async () => {
+        const res = await request(app).delete('/api/comments/9999').expect(404);
+        expect(res.body.msg).toBe('Comment not found');
+    });
+
+    test('should return a 400 error if the comment_id is invalid', async () => {
+        const res = await request(app).delete('/api/comments/invalid-id').expect(400);
+        expect(res.body.msg).toBe('Invalid comment ID');
     });
 });

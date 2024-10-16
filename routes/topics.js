@@ -1,7 +1,7 @@
 const express = require('express');
 const fs = require('fs')
 const path = require('path');
-const { getArticleById, getArticles, postComments, getCommentsByArticleId, updateArticle } = require('../controllers/articlescontroller')
+const { getArticleById, getArticles, postComments, getCommentsByArticleId, updateArticle, deleteCommentById } = require('../controllers/articlescontroller')
 
 const { getTopics } = require('../controllers/topicscontroller')
 
@@ -22,6 +22,8 @@ router.get('/api/articles/:article_id', getArticleById);
 router.get('/api', (req, res) => {
     res.status(200).json(endpoints)
 })
+
+router.delete('/api/comments/:comment_id', deleteCommentById)
 
 router.get('/api/topics', getTopics);
 

@@ -2,6 +2,28 @@
 const articlesModel = require('../models/articlesmodel'); // Adjust the path as necessary
 const db = require('../db/connection')
 
+const deleteCommentById = async (req, res, next) => {
+    const { comment_id } = req.params;
+    if (isNaN(comment_id)) {
+        return res.status(400).send({ msg: 'Invalid comment ID' });
+    }
+
+    try {
+        const result = await db.query(
+            'DELETE FROM comments WHERE comment_id = $1 RETURNING *;',
+            [comment_id]
+        );
+
+        if (result.rowCount === 0) {
+            return res.status(404).send({ msg: 'Comment not found' });
+        }
+
+        res.status(204).send();
+    } catch (err) {
+        next(err);
+    }
+}
+
 const updateArticle = async (req, res, next) => {
     const { article_id } = req.params;
     const { inc_votes } = req.body;
@@ -118,4 +140,4 @@ const getArticleById = async (req, res, next) => {
     }
 };
 
-module.exports = { getArticleById, getArticles, postComments, getCommentsByArticleId, updateArticle };
+module.exports = { getArticleById, getArticles, postComments, getCommentsByArticleId, updateArticle, deleteCommentById };
