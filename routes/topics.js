@@ -1,7 +1,7 @@
 const express = require('express');
 const fs = require('fs')
 const path = require('path');
-const { getArticleById, getArticles, postComments } = require('../controllers/articlescontroller')
+const { getArticleById, getArticles, postComments, getCommentsByArticleId } = require('../controllers/articlescontroller')
 
 const { getTopics } = require('../controllers/topicscontroller')
 
@@ -11,7 +11,9 @@ const router = express.Router();
 
 router.get('/api/articles', getArticles);
 
-router.get('/api/articles/:article_id/comments', postComments);
+router.get('/api/articles/:article_id/comments', getCommentsByArticleId)
+
+router.post('/api/articles/:article_id/comments', postComments)
 
 router.get('/api/articles/:article_id', getArticleById);
 

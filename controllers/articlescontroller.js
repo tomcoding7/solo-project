@@ -2,6 +2,34 @@
 const articlesModel = require('../models/articlesmodel'); // Adjust the path as necessary
 const db = require('../db/connection')
 
+const getCommentsByArticleId = async (req, res, next) => {
+    const { article_id } = req.params;
+
+    if (isNaN(article_id)) {
+        return res.status(400).send({ msg: 'Invalid article ID format' });
+    }
+
+    try {
+
+        const result = await db.query(`
+            SELECT comment_id, votes, created_at, author, body, article_id 
+            FROM comments
+            WHERE article_id = $1
+            ORDER BY created_at DESC;
+        `, [article_id]);
+
+        const comments = result.rows;
+
+        if (comments.length === 0) {
+            return res.status(404).send({ msg: 'No comments found for this article.' });
+        }
+
+        res.status(200).send({ comments });
+    } catch (err) {
+        next(err);
+    }
+};
+
 const postComments = async (req, res, next) => {
     const { article_id } = req.params;
     const { username, body } = req.body;
@@ -67,4 +95,4 @@ const getArticleById = async (req, res, next) => {
     }
 };
 
-module.exports = { getArticleById, getArticles, postComments };
+module.exports = { getArticleById, getArticles, postComments, getCommentsByArticleId };

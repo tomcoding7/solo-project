@@ -64,3 +64,119 @@ describe('GET /api/articles', () => {
     });
 
 });
+
+describe('POST /api/articles/:article_id/comments', () => {
+    it('should post a comment for a given article', async () => {
+        const newComment = {
+            username: 'butter_bridge',
+            body: 'This is a new comment!'
+        };
+
+        const res = await request(app)
+            .post('/api/articles/1/comments')
+            .send(newComment)
+            .expect(201);
+
+        expect(res.body.comment).toEqual(
+            expect.objectContaining({
+                comment_id: expect.any(Number),
+                votes: 0, // Default value
+                created_at: expect.any(String),
+                author: 'butter_bridge',
+                body: 'This is a new comment!',
+                article_id: 1
+            })
+        );
+    });
+
+    it('should return a 400 error if the username or body is missing', async () => {
+        const incompleteComment = { username: 'butter_bridge' };
+
+        const res = await request(app)
+            .post('/api/articles/1/comments')
+            .send(incompleteComment)
+            .expect(400);
+
+        expect(res.body).toEqual({ msg: 'invalid input provide both username and body' });
+    });
+
+    it('should return a 400 error if the article_id is invalid', async () => {
+        const newComment = { username: 'butter_bridge', body: 'This is a new comment!' };
+
+        const res = await request(app)
+            .post('/api/articles/not-a-number/comments')
+            .send(newComment)
+            .expect(400);
+
+        expect(res.body).toEqual({ msg: 'Invalid article ID' });
+    });
+
+    it('should return a 404 error if the username does not exist', async () => {
+        const newComment = { username: 'nonexistent_user', body: 'This is a new comment!' };
+
+        const res = await request(app)
+            .post('/api/articles/1/comments')
+            .send(newComment)
+            .expect(404);
+
+        expect(res.body).toEqual({ msg: 'User not found' });
+    });
+});
+
+describe('GET /api/articles/:article_id/comments', () => {
+    it('should return an array of comments for the given article_id', async () => {
+        const res = await request(app)
+            .get('/api/articles/1/comments')
+            .expect(200);
+
+        expect(Array.isArray(res.body.comments)).toBe(true);
+
+        res.body.comments.forEach(comment => {
+            expect(comment).toEqual(
+                expect.objectContaining({
+                    comment_id: expect.any(Number),
+                    votes: expect.any(Number),
+                    created_at: expect.any(String),
+                    author: expect.any(String),
+                    body: expect.any(String),
+                    article_id: 1 // article_id should match the requested one
+                })
+            );
+        });
+    });
+
+    it('should return comments sorted by most recent first', async () => {
+        const res = await request(app)
+            .get('/api/articles/1/comments')
+            .expect(200);
+
+        const comments = res.body.comments;
+
+        expect(comments).toBeSortedBy('created_at', { descending: true });
+    });
+
+    it('should return a 400 error if article_id is invalid', async () => {
+        const res = await request(app)
+            .get('/api/articles/not-a-number/comments')
+            .expect(400);
+
+        expect(res.body).toEqual({ msg: 'Invalid article ID' });
+    });
+
+    it('should return a 404 error if the article_id does not exist', async () => {
+        const res = await request(app)
+            .get('/api/articles/9999/comments') // Assuming 9999 is a non-existent article_id
+            .expect(404);
+
+        expect(res.body).toEqual({ msg: 'No comments found for this article.' });
+    });
+
+    it('should return an empty array if the article exists but has no comments', async () => {
+        const res = await request(app)
+            .get('/api/articles/3/comments')
+            .expect(200);
+
+        expect(Array.isArray(res.body.comments)).toBe(true);
+        expect(res.body.comments.length).toBe(0);
+    });
+});
