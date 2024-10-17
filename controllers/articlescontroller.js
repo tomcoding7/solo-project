@@ -2,6 +2,23 @@
 const articlesModel = require('../models/articlesmodel'); // Adjust the path as necessary
 const db = require('../db/connection')
 
+
+const getUsers = async (req, res, next) => {
+    try {
+        const result = await db.query('SELECT username, name, avatar_url FROM users;');
+        const users = result.rows;
+
+        if (users.length === 0) {
+            return res.status(404).send({ msg: 'No users found' });
+        }
+
+        res.status(200).send({ users });
+    } catch (err) {
+        next(err);
+    }
+};
+
+
 const deleteCommentById = async (req, res, next) => {
     const { comment_id } = req.params;
     if (isNaN(comment_id)) {
@@ -140,4 +157,5 @@ const getArticleById = async (req, res, next) => {
     }
 };
 
-module.exports = { getArticleById, getArticles, postComments, getCommentsByArticleId, updateArticle, deleteCommentById };
+
+module.exports = { getUsers, getArticleById, getArticles, postComments, getCommentsByArticleId, updateArticle, deleteCommentById };

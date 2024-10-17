@@ -1,7 +1,7 @@
 const express = require('express');
 const fs = require('fs')
 const path = require('path');
-const { getArticleById, getArticles, postComments, getCommentsByArticleId, updateArticle, deleteCommentById } = require('../controllers/articlescontroller')
+const { getUsers, getArticleById, getArticles, postComments, getCommentsByArticleId, updateArticle, deleteCommentById } = require('../controllers/articlescontroller')
 
 const { getTopics } = require('../controllers/topicscontroller')
 
@@ -10,6 +10,8 @@ const endpoints = require('../endpoints.json')
 const router = express.Router();
 
 router.get('/api/articles', getArticles);
+
+router.get('/api/users', getUsers);
 
 router.get('/api/articles/:article_id/comments', getCommentsByArticleId)
 
