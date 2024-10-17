@@ -116,24 +116,37 @@ const postComments = async (req, res, next) => {
     }
 }
 
-
 const getArticles = async (req, res, next) => {
+    const { sort_by = 'created_at', order = 'desc' } = req.query; // Defaults to created_at and descending order
+
+    const validSortColumns = ['author', 'title', 'article_id', 'topic', 'created_at', 'votes']; // Add other valid columns if needed
+    const validOrders = ['asc', 'desc'];
+
+    // Error handling for invalid queries
+    if (!validSortColumns.includes(sort_by)) {
+        return res.status(400).send({ msg: 'Invalid sort_by query' });
+    }
+    if (!validOrders.includes(order)) {
+        return res.status(400).send({ msg: 'Invalid order query' });
+    }
+
     try {
-        const result = await db.query(`SELECT articles.article_id, articles.title, articles.author, articles.topic, articles.created_at, articles.votes, articles.article_img_url, 
-      COUNT(comments.comment_id) AS comment_count
-      FROM articles
-      LEFT JOIN comments ON articles.article_id = comments.article_id
-      GROUP BY articles.article_id
-      ORDER BY articles.created_at DESC;
-    `);
+        const result = await db.query(`
+            SELECT articles.article_id, articles.title, articles.author, articles.topic, articles.created_at, articles.votes, articles.article_img_url, 
+            COUNT(comments.comment_id) AS comment_count
+            FROM articles
+            LEFT JOIN comments ON articles.article_id = comments.article_id
+            GROUP BY articles.article_id
+            ORDER BY ${sort_by} ${order.toUpperCase()};
+        `);
 
         const articles = result.rows;
-
-        res.status(200).send({ articles })
+        res.status(200).send({ articles });
     } catch (err) {
-        next(err)
+        next(err);
     }
-}
+};
+
 
 const getArticleById = async (req, res, next) => {
     const { article_id } = req.params;
